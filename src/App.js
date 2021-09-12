@@ -10,6 +10,7 @@ export class App extends Component {
       display_name :"",
       lat:"",
       lon:"",
+      imgSrc:"",
       showData:false,
       
         }}
@@ -53,7 +54,7 @@ export class App extends Component {
 
     return (
       <div>
-         <h1 style={{fontSize:'50px' , textAlign :'center' , color :'turquoise'}}>Welcome to City explorer</h1>
+         <h1  style={{fontSize:'60px', textAlign:'center' ,margin:'15px' , color:'gray'}} >Welcome to City explorer</h1>
         <Form  handleSubmit={this.handleSubmit} handleLocation={this.handleLocation} />
         {
           this.state.showData&&
