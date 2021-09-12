@@ -10,7 +10,8 @@ export class App extends Component {
       display_name :"",
       lat:"",
       lon:"",
-      showData:false
+      showData:false,
+      
         }}
 
     handleLocation=(e)=>{
@@ -24,9 +25,10 @@ export class App extends Component {
     handleSubmit=(e)=>{
       e.preventDefault();
       console.log(this.props.lon)
+
       let config={
         method:"GET",
-        baseURL:`https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATIONIQ_API_KEY}&q=${this.state.display_name}`,
+        baseURL:`https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATIONIQ_API_KEY}&q=${this.state.display_name}&format=json`,
 
       } 
       axios(config).then(res=>{
@@ -37,10 +39,12 @@ export class App extends Component {
           showData:true,
           display_name:responseData.display_name,
           lon:responseData.lon,
-          lat:responseData.lat
-    
+          lat:responseData.lat,
+          imgSrc:responseData.imgSrc
+          
   
         })
+        
       })
     }
   render() {
@@ -49,7 +53,7 @@ export class App extends Component {
 
     return (
       <div>
-         <h1>Welcome to City explorer</h1>
+         <h1 style={{fontSize:'50px' , textAlign :'center' , color :'turquoise'}}>Welcome to City explorer</h1>
         <Form  handleSubmit={this.handleSubmit} handleLocation={this.handleLocation} />
         {
           this.state.showData&&

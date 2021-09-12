@@ -4,12 +4,12 @@ export class Location extends Component {
     render() {
         return (
             <div>
-            <h1> city name :{this.props.city_name}</h1>
+            <h4 style={{fontSize:'30px', margin:'15px' , color:'gray'}}> city name :{this.props.display_name}</h4>
               
-                <p>  latitude :{this.props.lat}</p>
-                <p> longitude :{this.props.lon}</p>
-              
-  {/* <img src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_LOCATIONIQ_API_KEY} &center=${this.state.lat},${this.state.lon}&zoom=1-18`}/> */}
+                <p style={{fontSize:'30px', margin:'15px' , color:'gray'}}>  latitude :{this.props.lat}</p>
+                <p style={{fontSize:'30px', margin:'15px' , color:'gray'}}> longitude :{this.props.lon}</p>
+             <img  style={{ margin:'45px' }} src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_LOCATIONIQ_API_KEY} &center=${this.props.lat},${this.props.lon}&zoom=1-18`}/> 
+
             </div>
         )
     }
