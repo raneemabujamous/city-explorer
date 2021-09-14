@@ -1,16 +1,16 @@
 import React, { Component } from 'react'
-import { Alert  } from 'bootstrap'
+import Alert from 'react-bootstrap/Alert';
 export class Error extends Component {
     render() {
         return (
             <div>
-              
-                    <h1>ukujkhkh</h1>
-               <Alert >
-  
-    <Alert.Link href="#">an example link</Alert.Link>. Give it a click if you
-    like.
-  </Alert>  
+<h3>error</h3>
+
+
+               <Alert variant={'danger'}>
+    you must write right country
+  </Alert>
+ 
             </div>
         )
     }

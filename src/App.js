@@ -5,6 +5,7 @@ import Error from './component/Error'
 
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Alert } from 'bootstrap'
 
 export class App extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ export class App extends Component {
       showData: false,
       country: [],
       weatherData: [],
-      error:true
+      error: false
     }
   }
 
@@ -29,51 +30,82 @@ export class App extends Component {
 
     })
   }
+
   handleSubmit = (e) => {
     e.preventDefault();
+    if (!this.state.display_name) {
 
-    let config = {
-      method: "GET",
-      baseURL: `https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATIONIQ_API_KEY}&q=${this.state.display_name}&format=json`,
-
-    }
-    axios(config).then(res => {
-      let responseData = res.data[0]
       this.setState({
-
-        showData: true,
-        display_name: responseData.display_name,
-        lon: responseData.lon,
-        lat: responseData.lat,
-        imgSrc: responseData.imgSrc,
-        country: this.data,
+        error: true
 
       })
 
-    }).then(() => {
-      axios.get(`http://localhost:8000/weather?lon=${this.state.lon}&lat=${this.state.lat}`)
-        .then(res => {
+      // <Error error={this.state.error}/> 
+    } else {
+      try {
+        let config = {
+          method: "GET",
+          baseURL: `https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATIONIQ_API_KEY}&q=${this.state.display_name}&format=json`,
 
-          console.log()
-          this.setState({
-            weatherData: res.data
-          })
         }
-        )
-    }).catch(e=>{
-      this.setState={
-        error:false
-     
+        axios(config).then(res => {
+
+          let responseData = res.data[0]
+          this.setState({
+
+            showData: true,
+            display_name: responseData.display_name,
+            lon: responseData.lon,
+            lat: responseData.lat,
+            imgSrc: responseData.imgSrc,
+            country: this.data,
+
+          })
+
+        }).catch(e=>{
+          this.setState({
+
+            error: true
+          })
+          console.log("gre" , this.state.error)
+        })
+        .then(() => {
+          axios.get(`http://localhost:8000/weather?lon=${this.state.lon}&lat=${this.state.lat}`)
+            .then(res => {
+              console.log(res, "erfer")
+              if (!res.status == 200) {
+                console.log('Ewfw')
+                this.setState({
+                  error: true
+                })
+
+              } else {
+                this.setState({
+                  weatherData: res.data
+                })
+              }
+
+
+            }
+            )
+
+        })
+
+      } catch (error) {
+       
+        this.setState({
+
+          error: true
+        })
+        console.log("gre" , this.state.error)
       }
-     
-     
-    })
+    }
   }
 
-  
+
   render() {
 
-    
+
 
 
     return (
@@ -93,18 +125,18 @@ export class App extends Component {
 
         }
         {
-         ( this.state.showData && this.state.error) &&
+          (this.state.showData && !this.state.error) &&
           <Location display_name={this.state.display_name}
             lat={this.state.lat}
             lon={this.state.lon}
             country={this.state.country}
 
           />
-          
+
         }
         {
-          
-          !this.state.error&& <Error/>
+
+          this.state.error && <Error />
         }
       </div>
     )
