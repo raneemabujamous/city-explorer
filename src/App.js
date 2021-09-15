@@ -6,6 +6,7 @@ import Error from './component/Error'
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Alert } from 'bootstrap'
+import Movie from './component/Movie';
 
 export class App extends Component {
   constructor(props) {
@@ -16,15 +17,18 @@ export class App extends Component {
       lon: "",
       imgSrc: "",
       showData: false,
-      country: [],
+
       weatherData: [],
       error: false,
-      showWeather :false
+      showWeather: false,
+      movieList: [],
+      showMoviData: false
     }
   }
 
   handleLocation = (e) => {
     let display_name = e.target.value;
+
     this.setState({
       display_name: display_name,
 
@@ -32,24 +36,22 @@ export class App extends Component {
     })
   }
 
-  handleSubmit = (e) => {
+
+  handleSubmit = async (e) => {
     e.preventDefault();
-    if (!this.state.display_name) {
-
-      this.setState({
+if (!this.state.display_name) {
+    this.setState({
         error: true
-
       })
-
-      // <Error error={this.state.error}/> 
     } else {
       try {
+
         let config = {
           method: "GET",
           baseURL: `https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATIONIQ_API_KEY}&q=${this.state.display_name}&format=json`,
 
         }
-        axios(config).then(res => {
+        await axios(config).then(res => {
 
           let responseData = res.data[0]
           this.setState({
@@ -64,89 +66,111 @@ export class App extends Component {
           })
 
         })
-        .catch(e=>{
-          this.setState({
+          .catch(e => {
+            this.setState({
 
-            error: true
+              error: true
+            })
+            console.log("gre", this.state.error)
           })
-          console.log("gre" , this.state.error)
-        })
-        .then(() => {
-          axios.get(`http://${process.env.REACT_APP_BACKEND_URL}/weather?lon=${this.state.lon}&lat=${this.state.lat}`)
-            .then(res => {
-              console.log(res, "erfer")
-              if (!res.status == 200) {
-                console.log('Ewfw')
-                this.setState({
-                  error: true
-                })
+          .then(() => {
+             axios.get(`http://${process.env.REACT_APP_BACKEND_URL}/weather?lon=${this.state.lon}&lat=${this.state.lat}`)
+              .then(res => {
+                console.log(res, "erfer")
+                if (!res.status == 200) {
+                  console.log('Ewfw')
+                  this.setState({
+                    error: true
+                  })
 
-              } else {
-                this.setState({
-                  weatherData: res.data,
-                  
-                  
-                })
-                
+
+                } else {
+                  this.setState({
+                    weatherData: res.data,
+
+
+                  })
+
+                }
+
               }
+              )
 
-            }
-            )
+          }).then(() => {
+            const cityName = this.state.display_name.split(',')[0];
+console.log(cityName)
+            axios.get(`http://${process.env.REACT_APP_BACKEND_URL}/movie?api_key=${process.env.MOVIE_API_KEY}&query=${cityName}`)
+              .then(res => {
+                let respnseMovie = res.data
+                console.log(this.state.showMoviData, "movieList")
+                console.log(this.state.showMoviData, "movieList")
 
-        })
+                this.setState({
+                  movieList: respnseMovie,
+                  showMoviData: true
+                })
+
+              })
+
+          })
 
       }
-       catch (error) {
-       
+      catch (error) {
+
         this.setState({
 
           error: true
         })
-        console.log("gre" , this.state.error)
+        console.log("gre", this.state.error)
       }
+    }}
+
+
+
+    render() {
+
+
+
+
+      return (
+        <div>
+          <h1 style={{ fontSize: '60px', textAlign: 'center', margin: '15px', color: 'gray' }} >Welcome to City explorer</h1>
+          <Form handleSubmit={this.handleSubmit} handleLocation={this.handleLocation} />
+          {
+            this.state.weatherData.map(item => {
+              return <>
+
+                <h3>date : {item.date}</h3>
+                <h3> description :{item.description}</h3>
+
+
+              </>
+            })
+
+          }
+          {
+            (this.state.showData && !this.state.error) &&
+            <Location display_name={this.state.display_name}
+              lat={this.state.lat}
+              lon={this.state.lon}
+              country={this.state.country}
+
+            />
+
+          }
+          {
+            this.state.showMoviData &&
+            <Movie movieList={this.state.movieList} />
+
+          }
+          {
+
+            this.state.error && <Error />
+          }
+        </div>
+      )
     }
   }
-
-
-  render() {
-
-
-
-
-    return (
-      <div>
-        <h1 style={{ fontSize: '60px', textAlign: 'center', margin: '15px', color: 'gray' }} >Welcome to City explorer</h1>
-        <Form handleSubmit={this.handleSubmit} handleLocation={this.handleLocation} />
-        {
-          this.state.weatherData.map(item => {
-            return <>
-
-              <h3>date : {item.date}</h3>
-              <h3> description :{item.description}</h3>
-
-
-            </>
-          })
-
-        }
-        {
-          (this.state.showData && !this.state.error) &&
-          <Location display_name={this.state.display_name}
-            lat={this.state.lat}
-            lon={this.state.lon}
-            country={this.state.country}
-
-          />
-
-        }
-        {
-
-          this.state.error && <Error />
-        }
-      </div>
-    )
-  }
-}
 
 export default App
 
