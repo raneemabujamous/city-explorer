@@ -18,7 +18,8 @@ export class App extends Component {
       showData: false,
       country: [],
       weatherData: [],
-      error: false
+      error: false,
+      showWeather :false
     }
   }
 
@@ -62,7 +63,8 @@ export class App extends Component {
 
           })
 
-        }).catch(e=>{
+        })
+        .catch(e=>{
           this.setState({
 
             error: true
@@ -70,7 +72,7 @@ export class App extends Component {
           console.log("gre" , this.state.error)
         })
         .then(() => {
-          axios.get(`http://localhost:8000/weather?lon=${this.state.lon}&lat=${this.state.lat}`)
+          axios.get(`http://${process.env.REACT_APP_BACKEND_URL}/weather?lon=${this.state.lon}&lat=${this.state.lat}`)
             .then(res => {
               console.log(res, "erfer")
               if (!res.status == 200) {
@@ -81,17 +83,20 @@ export class App extends Component {
 
               } else {
                 this.setState({
-                  weatherData: res.data
+                  weatherData: res.data,
+                  
+                  
                 })
+                
               }
-
 
             }
             )
 
         })
 
-      } catch (error) {
+      }
+       catch (error) {
        
         this.setState({
 
@@ -144,3 +149,4 @@ export class App extends Component {
 }
 
 export default App
+
