@@ -18,7 +18,8 @@ export class App extends Component {
       lon: "",
       imgSrc: "",
       showData: false,
-weatherData: [],
+
+      weatherData: [],
       error: false,
       showWeather: false,
       movieList: [],
@@ -39,51 +40,91 @@ weatherData: [],
 
   handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      let responselocation = await axios.get(`https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATIONIQ_API_KEY}&q=${this.state.display_name}&format=json`)
-      let dataLocation = responselocation.data[0]
-      let responseWather = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/weather?lon=${this.state.lon}&lat=${this.state.lat}`)
-      let DataWeather = responseWather.data
-      const cityName = this.state.display_name.split(',')[0];
-
-      let repinseMovie = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/movie?api_key=${process.env.MOVIE_API_KEY}&query=${cityName}`)
-      let movieData = repinseMovie.data
-
-      
-
-      this.setState({
-
-
-        showData: true,
-        display_name: dataLocation.display_name,
-        lon: dataLocation.lon,
-        lat: dataLocation.lat,
-        imgSrc: dataLocation.imgSrc,
-        country: this.data,
-        weatherData: DataWeather,
-        movieList: movieData,
-        showMoviData: true,
-        showWeather: true,
-        error: false
-
-
-      })
-    } catch (error) {
-      console.log("movieData",this.state.movieData)
-      console.log("DataWeather",this.state.DataWeather)
-      console.log("cityName",this.state.cityName)
-      console.log("dataLocation",this.state.dataLocation)
-      this.setState({
-        showData: false,
-        showWeather: false,
-        showMoviData: false,
+if (!this.state.display_name) {
+    this.setState({
         error: true
+      })
+    } else {
+      try {
 
-      });
-    
-    }
+        let config = {
+          method: "GET",
+          baseURL: `https://us1.locationiq.com/v1/search.php?key=${process.env.REACT_APP_LOCATIONIQ_API_KEY}&q=${this.state.display_name}&format=json`,
 
-}
+        }
+        await axios(config).then(res => {
+
+          let responseData = res.data[0]
+          this.setState({
+
+            showData: true,
+            display_name: responseData.display_name,
+            lon: responseData.lon,
+            lat: responseData.lat,
+            imgSrc: responseData.imgSrc,
+            country: this.data,
+
+          })
+
+        })
+          .catch(e => {
+            this.setState({
+
+              error: true
+            })
+            console.log("gre", this.state.error)
+          })
+          .then(() => {
+             axios.get(`${process.env.REACT_APP_BACKEND_URL}/weather?lon=${this.state.lon}&lat=${this.state.lat}`)
+              .then(res => {
+                console.log(res, "erfer")
+                if (!res.status == 200) {
+                  console.log('Ewfw')
+                  this.setState({
+                    error: true
+                  })
+
+
+                } else {
+                  this.setState({
+                    weatherData: res.data,
+                    showWeather:true
+
+                  })
+
+                }
+
+              }
+              )
+
+          }).then(() => {
+            const cityName = this.state.display_name.split(',')[0];
+console.log(cityName)
+            axios.get(`${process.env.REACT_APP_BACKEND_URL}/movie?api_key=${process.env.MOVIE_API_KEY}&query=${cityName}`)
+              .then(res => {
+                let respnseMovie = res.data
+                console.log(this.state.showMoviData, "movieList")
+                console.log(this.state.showMoviData, "movieList")
+
+                this.setState({
+                  movieList: respnseMovie,
+                  showMoviData: true
+                })
+
+              })
+
+          })
+
+      }
+      catch (error) {
+
+        this.setState({
+
+          error: true
+        })
+        console.log("gre", this.state.error)
+      }
+    }}
 
 
 
