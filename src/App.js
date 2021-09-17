@@ -168,4 +168,3 @@ console.log(cityName)
   }
 
 export default App
-

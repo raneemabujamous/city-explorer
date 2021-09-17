@@ -1,7 +1,18 @@
-handleSubmit = async (e) => {
+ handleLocation = (e) => {
+    let display_name = e.target.value;
+
+    this.setState({
+      display_name: display_name,
+
+
+    })
+  }
+
+
+  handleSubmit = async (e) => {
     e.preventDefault();
-    if (!this.state.display_name) {
-      this.setState({
+if (!this.state.display_name) {
+    this.setState({
         error: true
       })
     } else {
@@ -35,7 +46,7 @@ handleSubmit = async (e) => {
             console.log("gre", this.state.error)
           })
           .then(() => {
-            axios.get(`http://${process.env.REACT_APP_BACKEND_URL}/weather?lon=${this.state.lon}&lat=${this.state.lat}`)
+             axios.get(`${process.env.REACT_APP_BACKEND_URL}/weather?lon=${this.state.lon}&lat=${this.state.lat}`)
               .then(res => {
                 console.log(res, "erfer")
                 if (!res.status == 200) {
@@ -48,7 +59,7 @@ handleSubmit = async (e) => {
                 } else {
                   this.setState({
                     weatherData: res.data,
-                    showWeather: true
+                    showWeather:true
 
                   })
 
@@ -59,8 +70,8 @@ handleSubmit = async (e) => {
 
           }).then(() => {
             const cityName = this.state.display_name.split(',')[0];
-            console.log(cityName)
-            axios.get(`http://${process.env.REACT_APP_BACKEND_URL}/movie?api_key=${process.env.MOVIE_API_KEY}&query=${cityName}`)
+console.log(cityName)
+            axios.get(`${process.env.REACT_APP_BACKEND_URL}/movie?api_key=${process.env.MOVIE_API_KEY}&query=${cityName}`)
               .then(res => {
                 let respnseMovie = res.data
                 console.log(this.state.showMoviData, "movieList")
@@ -84,5 +95,4 @@ handleSubmit = async (e) => {
         })
         console.log("gre", this.state.error)
       }
-    }
-  }
+    }}
