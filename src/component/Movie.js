@@ -6,13 +6,17 @@ export class Movie extends Component {
     super(props);
   }
 
-  render() {
+  render()
+  
+  {
     console.log(this.props.movieList);
     return <div>
-  {this.props.movieList.map((e) => (
-    
+      <Row xs={1} md={3} className="g-4">
 
-<Card style={{ width: '18rem' }}>
+  {this.props.movieList.map((e) => (
+      <Col>
+
+<Card style={{ width: '18rem' }}  className='mx-5'>
                     <Card.Img variant="top" src={e.poster_path} />
                     <Card.Body>
                         <Card.Title>{e.title} </Card.Title>
@@ -27,11 +31,13 @@ export class Movie extends Component {
 
                     </Card.Body>
                 </Card>
-
+                </Col>
   ))}
+</Row >
 
     </div>;
   }
+    
 }
 
 export default Movie;
